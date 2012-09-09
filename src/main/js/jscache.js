@@ -47,10 +47,10 @@
 (function JsCache() {
 
     function JsCache() {
-        this.cachedValue = undefined;
+        this.cache = {};
     }
 
-    JsCache.prototype.cache = {};
+    JsCache.prototype.cache = null;
 
     JsCache.prototype.hasCache = function(id) {
         return this.cache[id] !== undefined;

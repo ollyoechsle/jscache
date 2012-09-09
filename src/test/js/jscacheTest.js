@@ -136,4 +136,30 @@
 
     });
 
+    test("two caches", function() {
+
+        var greeter = {
+            value1: 1,
+            getValue1: function() {
+                return this.value1;
+            },
+            value2: 2,
+            getValue2: function() {
+                return this.value2;
+            }
+        };
+
+        var cachedGreeter = Object.cache(greeter);
+
+        equal(cachedGreeter.getValue1(), 1);
+        equal(cachedGreeter.getValue2(), 2);
+
+        greeter.value1 = 3;
+        greeter.value2 = 4;
+
+        equal(cachedGreeter.getValue1(), 1);
+        equal(cachedGreeter.getValue2(), 2);
+
+    });
+
 })();
