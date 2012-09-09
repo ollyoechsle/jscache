@@ -10,24 +10,46 @@
         };
     }
 
+    function JsCache() {
+        this.cachedValue = undefined;
+    }
+
+    JsCache.prototype.cachedValue = undefined;
+
+    JsCache.prototype.expireCache = function() {
+        this.cachedValue = null;
+    };
+
+    JsCache.prototype.hasCache = function() {
+        return this.cachedValue !== undefined;
+    };
+
+    JsCache.prototype.getCache = function() {
+        return this.cachedValue;
+    };
+
+    JsCache.prototype.setCache = function(value) {
+        this.cachedValue = value;
+        return value;
+    };
+
     function cache(fn) {
 
-        return function() {
+        var cacheInstance = new JsCache(fn);
 
-            var cached = fn["__cached"];
+        return function jsCacheProxy() {
 
-            if (!cached) {
-                cached = fn.apply(this, arguments);
-                fn["__cached"] = cached;
+            if (!cacheInstance.hasCache()) {
+                return cacheInstance.setCache(fn.apply(this, arguments));
+            } else {
+                return cacheInstance.getCache();
             }
-
-            return cached;
 
         };
 
     }
 
-    function init(proxy, object) {
+    function createCacheMethods(proxy, object) {
 
         var key, fn;
 
@@ -44,7 +66,7 @@
 
     Object.cache = function (object) {
         var proxy = Object.create(object);
-        init(proxy, object);
+        createCacheMethods(proxy, object);
         return proxy;
     };
 
