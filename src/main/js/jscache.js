@@ -1,5 +1,9 @@
-(function() {
-
+/**
+ * Adds Polyfills for ECMAScript5 methods that JsCache depends on:
+ * Object.create and Function.bind
+ * If you don't plan on running JSCache on non ES5 browsers, feel free to delete this.
+ */
+(function addPolyFills() {
     if (!Object.create) {
         Object.create = function (o) {
             function F() {
@@ -34,6 +38,13 @@
             return fBound;
         };
     }
+})();
+
+/**
+ * Creates JS Cache.
+ * Exposes Object.cache
+ */
+(function JsCache() {
 
     function JsCache() {
         this.cachedValue = undefined;
