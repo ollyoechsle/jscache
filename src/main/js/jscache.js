@@ -50,23 +50,23 @@
         this.cachedValue = undefined;
     }
 
-    JsCache.prototype.cachedValue = undefined;
+    JsCache.prototype.cache = {};
 
-    JsCache.prototype.hasCache = function() {
-        return this.cachedValue !== undefined;
+    JsCache.prototype.hasCache = function(id) {
+        return this.cache[id] !== undefined;
     };
 
     JsCache.prototype.expireCache = function() {
-        this.cachedValue = undefined;
+        this.cache = {};
     };
 
-    JsCache.prototype.setCache = function(value) {
-        this.cachedValue = value;
+    JsCache.prototype.setCache = function(value, id) {
+        this.cache[id] = value;
         return value;
     };
 
-    JsCache.prototype.getCache = function() {
-        return this.cachedValue;
+    JsCache.prototype.getCache = function(id) {
+        return this.cache[id];
     };
 
     JsCache.prototype._addCacheAPIMethods = function(proxy) {
@@ -87,10 +87,12 @@
         return cacheInstance._addCacheAPIMethods(
             function jsCacheProxy() {
 
-                if (!cacheInstance.hasCache()) {
-                    return cacheInstance.setCache(fn.apply(this, arguments));
+                var id = "key" + Array.prototype.slice.call(arguments).join(" ");
+
+                if (!cacheInstance.hasCache(id)) {
+                    return cacheInstance.setCache(fn.apply(this, arguments), id);
                 } else {
-                    return cacheInstance.getCache();
+                    return cacheInstance.getCache(id);
                 }
 
             });

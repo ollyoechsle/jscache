@@ -103,10 +103,36 @@
 
         ["expireCache", "getCache", "setCache"].forEach(function(methodName) {
 
-            ok(cached.getValue[methodName], "Cached getValue function should have method " + methodName);
+            ok(cached.getValue[methodName],
+               "Cached getValue function should have method " + methodName);
 
         });
 
+    });
+
+    test("one cache per argument", function() {
+
+        var greeter = {
+            greeting: "Hello",
+            greet: function(name) {
+                return this.greeting + " " + name;
+            }
+        };
+
+        var cachedGreeter = Object.cache(greeter);
+
+        equal(cachedGreeter.greet("Olly"), "Hello Olly");
+        equal(cachedGreeter.greet("Rong"), "Hello Rong");
+
+        greeter.greeting = "Hi";
+
+        equal(cachedGreeter.greet("Olly"), "Hello Olly");
+        equal(cachedGreeter.greet("Rong"), "Hello Rong");
+
+        cachedGreeter.greet.expireCache();
+        
+        equal(cachedGreeter.greet("Olly"), "Hi Olly");
+        equal(cachedGreeter.greet("Rong"), "Hi Rong");
 
     });
 
