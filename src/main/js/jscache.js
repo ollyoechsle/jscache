@@ -69,7 +69,7 @@
         return this.cachedValue;
     };
 
-    JsCache.prototype._addPublicMethods = function(proxy) {
+    JsCache.prototype._addCacheAPIMethods = function(proxy) {
         var key, fn;
         for (key in this) {
             fn = this[key];
@@ -80,23 +80,24 @@
         return proxy;
     };
 
-    function cache(fn) {
+    function createCacheProxy(fn) {
 
         var cacheInstance = new JsCache();
 
-        return cacheInstance._addPublicMethods(function jsCacheProxy() {
+        return cacheInstance._addCacheAPIMethods(
+            function jsCacheProxy() {
 
-            if (!cacheInstance.hasCache()) {
-                return cacheInstance.setCache(fn.apply(this, arguments));
-            } else {
-                return cacheInstance.getCache();
-            }
+                if (!cacheInstance.hasCache()) {
+                    return cacheInstance.setCache(fn.apply(this, arguments));
+                } else {
+                    return cacheInstance.getCache();
+                }
 
-        });
+            });
 
     }
 
-    function createCacheMethods(proxy, object) {
+    function createCacheProxies(proxy, object) {
 
         var key, fn;
 
@@ -105,7 +106,7 @@
             fn = object[key];
 
             if (typeof fn === "function") {
-                proxy[key] = cache(fn);
+                proxy[key] = createCacheProxy(fn);
             }
 
         }
@@ -113,7 +114,7 @@
 
     Object.cache = function (object) {
         var proxy = Object.create(object);
-        createCacheMethods(proxy, object);
+        createCacheProxies(proxy, object);
         return proxy;
     };
 
