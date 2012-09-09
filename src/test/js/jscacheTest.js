@@ -57,6 +57,22 @@
 
     });
 
+    test("can expire function", function() {
+
+        var cached = Object.cache(dao);
+
+        dao.value = 10;
+
+        equal(cached.getValue(), 10, "Underlying method is called the first time");
+
+        dao.value = 20;
+
+        cached.getValue.expireCache();
+
+        equal(cached.getValue(), 20, "Underlying method is called again after cache expiry");
+
+    });
+
     test("variable are wrapped", function() {
 
         var obj = {
@@ -65,11 +81,31 @@
 
         var cached = Object.cache(obj);
 
-        equal(cached.counter, 1, "The value on the object should be available on the cached object");
+        equal(cached.counter, 1,
+              "The value on the object should be available on the cached object");
 
         obj.counter++;
 
-        equal(cached.counter, 2, "Changes to the counter on the sub object should be accessible on the cached object");
+        equal(cached.counter, 2,
+              "Changes to the counter on the sub object should be accessible on the cached object");
+
+    });
+
+    test("cached functions have additional methods", function() {
+
+        var obj = {
+            getValue: function() {
+
+            }
+        };
+
+        var cached = Object.cache(obj);
+
+        ["expireCache", "getCache", "setCache"].forEach(function(methodName) {
+
+            ok(cached.getValue[methodName], "Cached getValue function should have method " + methodName);
+
+        });
 
 
     });
